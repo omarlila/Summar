@@ -54,36 +54,16 @@ redis-cli ping  # Should return "PONG"
 
 #### For Windows:
 ```cmd
-REM Pull Redis image
-docker pull redis:alpine
+Pull Redis image
+docker pull redis
 
-REM Create a volume for Redis data persistence
+Create a volume for Redis data persistence
 docker volume create redis-data
 
-REM Run Redis container with volume mapping
-docker run -d --name redis-server -p 6379:6379 -v redis-data:/data redis:alpine redis-server --appendonly yes
+Run Redis container with volume mapping
+docker run --name redis -p 6379:6379 -v "redis-data:/data" -d redis
 
-REM Verify Redis is running
-docker ps
-docker exec -it redis-server redis-cli ping
-```
-
-**Alternative for Windows (using PowerShell):**
-```powershell
-# Pull Redis image
-docker pull redis:alpine
-
-# Create a volume for Redis data persistence
-docker volume create redis-data
-
-# Run Redis container with volume mapping
-docker run -d `
-  --name redis-server `
-  -p 6379:6379 `
-  -v redis-data:/data `
-  redis:alpine redis-server --appendonly yes
-
-# Verify Redis is running
+Verify Redis is running
 docker ps
 docker exec -it redis-server redis-cli ping
 ```
@@ -104,39 +84,17 @@ echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/
 sudo apt update && sudo apt install ngrok
 ```
 
-#### For macOS:
-```bash
-# For macOS with Homebrew
-brew install ngrok/ngrok/ngrok
-```
-
 #### For Windows:
 ```cmd
-REM Option 1: Download from website
-REM Visit https://ngrok.com/download and download the Windows version
-REM Extract the .exe file to a folder in your PATH
+Option 1: Download from website
+Visit https://ngrok.com/download and download the Windows version
+Extract the .exe file to a folder in your PATH
 
-REM Option 2: Using Chocolatey (if installed)
+Option 2: Using Chocolatey (if installed)
 choco install ngrok
 
-REM Option 3: Using Scoop (if installed)
+Option 3: Using Scoop (if installed)
 scoop install ngrok
-```
-
-**For Windows PowerShell (Manual Installation):**
-```powershell
-# Create a directory for ngrok
-New-Item -ItemType Directory -Path "C:\ngrok" -Force
-
-# Download ngrok (you can also visit https://ngrok.com/download)
-Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile "C:\ngrok\ngrok.zip"
-
-# Extract the zip file
-Expand-Archive -Path "C:\ngrok\ngrok.zip" -DestinationPath "C:\ngrok"
-
-# Add to PATH (run as Administrator)
-$env:PATH += ";C:\ngrok"
-[Environment]::SetEnvironmentVariable("PATH", $env:PATH, [EnvironmentVariableTarget]::Machine)
 ```
 
 #### Authentication (All Platforms):
@@ -167,27 +125,14 @@ ollama serve
 
 #### For Windows:
 ```cmd
-REM Download Ollama from: https://ollama.com/download/windows
-REM Run the installer (OllamaSetup.exe)
-REM The installer will automatically add Ollama to your PATH
+Download Ollama from: https://ollama.com/download/windows
+Run the installer (OllamaSetup.exe)
+The installer will automatically add Ollama to your PATH
 
-REM Start Ollama service (run in Command Prompt or PowerShell)
+Start Ollama service (run in Command Prompt or PowerShell)
 ollama serve
 
-REM Or use the Ollama app from the Start menu
-```
-
-**Alternative Windows Installation:**
-```powershell
-# Using PowerShell (if you have package managers)
-# With Chocolatey:
-choco install ollama
-
-# With Scoop:
-scoop install ollama
-
-# Start Ollama service
-ollama serve
+Or use the Ollama app from the Start menu
 ```
 
 #### Verify Installation (All Platforms):
@@ -211,10 +156,10 @@ chmod +x start_ollama.bat
 
 #### For Windows:
 ```cmd
-REM Run the provided batch script from the repository
+Run the provided batch script from the repository
 start_ollama.bat
 
-REM Or double-click the start_ollama.bat file in Windows Explorer
+Or double-click the start_ollama.bat file in Windows Explorer
 ```
 
 **The script will automatically:**
@@ -244,7 +189,7 @@ curl -X POST http://localhost:11434/api/chat \
 ### 4. 🧠 Embedding Model Prerequisites
 The embedding model `jinaai/jina-clip-v2` will be automatically downloaded when first used. Ensure you have sufficient disk space (approximately 2-3GB).
 
-### 5. 📊 Supabase Setup (Optional)
+### 5. 📊 Supabase Setup
 1. Create a project at [supabase.com](https://supabase.com)
 2. Get your project URL and service role key
 3. Create required tables (schema provided in `/database` folder)
@@ -271,15 +216,6 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-#### For Windows (PowerShell):
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-
-# If you get execution policy error, run:
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
 ### 3. Install Python dependencies
 ```bash
 pip install -r requirements.txt
@@ -288,47 +224,13 @@ pip install -r requirements.txt
 ### 4. Configure environment variables
 Create a `.env` file in the root directory with the following configuration:
 
-**Important:** Make sure all values align with your custom setup and the models downloaded by `start_ollama.bat`:
-
-```env
-# Ollama Configuration
-OLLAMA_BASE_URL=http://localhost:11434
-DEFAULT_MODEL=smollm2:latest
-ARABIC_MODEL=prakasharyan/qwen-arabic:latest
-EMBEDDINGS_MODEL=jinaai/jina-clip-v2
-
-# Redis Configuration (Docker setup from prerequisites)
-REDIS_URL=redis://localhost:6379/0
-
-# Supabase Configuration (Optional - configure if using persistent logging)
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your-supabase-service-role-key
-
-# ngrok Configuration (Optional - set to false if not using public tunneling)
-USE_NGROK=true
-NGROK_AUTHTOKEN=your-ngrok-token
-
-# Memory Configuration (Advanced settings)
-SHORT_TERM_MEMORY_TTL=3600
-LONG_TERM_MEMORY_TTL=2592000
-MAX_CONVERSATION_LENGTH=10000
-SIMILARITY_THRESHOLD=0.7
-
-# ChromaDB Configuration
-CHROMA_DB_PATH=./chroma_data_godic
-
-# API Configuration
-MAX_TOKENS_DEFAULT=2000
-TEMPERATURE=0.7
-TOP_P=0.9
-```
+**Important:** Make sure all values align with your custom setup and the models downloaded by `start_ollama.bat`
 
 **Configuration Notes:**
 - If you modified the models in `start_ollama.bat`, update `DEFAULT_MODEL` and `ARABIC_MODEL` accordingly
 - Set `USE_NGROK=false` if you don't want public URL exposure
 - Adjust memory settings based on your system resources
 - Ensure `REDIS_URL` matches your Docker Redis container port (default: 6379)
-- `SUPABASE_URL` and `SUPABASE_KEY` are optional but required for persistent chat logging
 
 ## 🧪 Running the Server
 
@@ -349,47 +251,21 @@ redis-cli ping                           # Redis
 
 #### For Windows (Command Prompt):
 ```cmd
-REM Ensure Redis is running
+Ensure Redis is running
 docker start redis-server
 
-REM Ensure Ollama is running (in a separate command prompt)
+Ensure Ollama is running (in a separate command prompt)
 ollama serve
 
-REM Verify all services are healthy
+Verify all services are healthy
 curl http://localhost:11434/api/version
-docker exec -it redis-server redis-cli ping
-```
-
-#### For Windows (PowerShell):
-```powershell
-# Ensure Redis is running
-docker start redis-server
-
-# Ensure Ollama is running (in a separate PowerShell window)
-ollama serve
-
-# Verify all services are healthy
-Invoke-RestMethod -Uri "http://localhost:11434/api/version"
 docker exec -it redis-server redis-cli ping
 ```
 
 ### 2. Run the chat server
 
-#### For Linux/macOS:
 ```bash
 python server.py
-```
-
-#### For Windows:
-```cmd
-REM Command Prompt
-python server.py
-
-REM Or PowerShell
-python server.py
-
-REM Or if you have multiple Python versions
-py -3 server.py
 ```
 
 The server will start on `http://localhost:8000` with the following endpoints:
@@ -409,7 +285,7 @@ If ngrok is enabled, you'll also see a public URL in the console output.
 # Check if Redis container is running
 docker ps | grep redis
 # Restart if needed
-docker restart redis-server
+docker restart redis
 ```
 
 **Windows:**
@@ -417,41 +293,7 @@ docker restart redis-server
 REM Check if Redis container is running
 docker ps | findstr redis
 REM Restart if needed
-docker restart redis-server
-```
-
-#### Ollama Model Not Found:
-**All Platforms:**
-```bash
-# List installed models
-ollama list
-# Pull missing model
-ollama pull smollm2:latest
-```
-
-#### Port Already in Use:
-**Linux/macOS:**
-```bash
-# Check what's using port 8000
-lsof -i :8000
-# Kill the process if needed
-kill -9 <PID>
-```
-
-**Windows (Command Prompt):**
-```cmd
-REM Check what's using port 8000
-netstat -ano | findstr :8000
-REM Kill the process if needed (replace <PID> with actual process ID)
-taskkill /PID <PID> /F
-```
-
-**Windows (PowerShell):**
-```powershell
-# Check what's using port 8000
-Get-NetTCPConnection -LocalPort 8000
-# Kill the process if needed
-Stop-Process -Id <PID> -Force
+docker restart redis
 ```
 
 #### ngrok Authentication Error:
@@ -502,15 +344,3 @@ Supabase JWT-based Bearer token required for:
 ## 📚 API Documentation
 
 Once the server is running, visit `http://localhost:8000/docs` for interactive API documentation with Swagger UI.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
