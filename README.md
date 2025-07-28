@@ -97,48 +97,21 @@ curl http://localhost:11434/api/version
 ```
 
 **Download Required Models:**
-Create a bash script to download all necessary models:
+Use the provided batch script to download all necessary models:
 
 ```bash
-# Create setup_models.sh in your repository
-cat > setup_models.sh << 'EOF'
-#!/bin/bash
+# Run the provided start_ollama.bat script from the repository
+./start_ollama.bat
 
-echo "🤖 Downloading Ollama models for RAG Chat Server..."
-
-# Download default English model
-echo "📥 Downloading smollm2:latest..."
-ollama pull smollm2:latest
-
-# Download Arabic model
-echo "📥 Downloading prakasharyan/qwen-arabic:latest..."
-ollama pull prakasharyan/qwen-arabic:latest
-
-# Verify models are installed
-echo "✅ Installed models:"
-ollama list
-
-echo "🧪 Testing model APIs..."
-# Test default model
-echo "Testing smollm2:latest..."
-curl -X POST http://localhost:11434/api/generate \
-  -H "Content-Type: application/json" \
-  -d '{"model": "smollm2:latest", "prompt": "Hello, how are you?", "stream": false}'
-
-echo -e "\n\nTesting prakasharyan/qwen-arabic:latest..."
-curl -X POST http://localhost:11434/api/generate \
-  -H "Content-Type: application/json" \
-  -d '{"model": "prakasharyan/qwen-arabic:latest", "prompt": "مرحبا، كيف حالك؟", "stream": false}'
-
-echo -e "\n\n✅ Model setup complete!"
-EOF
-
-# Make the script executable
-chmod +x setup_models.sh
-
-# Run the setup script
-./setup_models.sh
+# This script will automatically:
+# - Start Ollama service
+# - Download smollm2:latest (English model)
+# - Download prakasharyan/qwen-arabic:latest (Arabic model)
+# - Verify all models are properly installed
+# - Test API endpoints for both models
 ```
+
+**Note:** If you need to make custom changes to the models or add additional ones, modify the `start_ollama.bat` script in the repository accordingly.
 
 **Verify Ollama API endpoints:**
 ```bash
@@ -183,7 +156,9 @@ pip install -r requirements.txt
 ```
 
 ### 4. Configure environment variables
-Create a `.env` file in the root directory:
+Create a `.env` file in the root directory with the following configuration:
+
+**Important:** Make sure all values align with your custom setup and the models downloaded by `start_ollama.bat`:
 
 ```env
 # Ollama Configuration
@@ -192,17 +167,38 @@ DEFAULT_MODEL=smollm2:latest
 ARABIC_MODEL=prakasharyan/qwen-arabic:latest
 EMBEDDINGS_MODEL=jinaai/jina-clip-v2
 
-# Redis Configuration
+# Redis Configuration (Docker setup from prerequisites)
 REDIS_URL=redis://localhost:6379/0
 
-# Supabase Configuration (Optional)
+# Supabase Configuration (Optional - configure if using persistent logging)
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your-supabase-service-role-key
 
-# ngrok Configuration (Optional)
+# ngrok Configuration (Optional - set to false if not using public tunneling)
 USE_NGROK=true
 NGROK_AUTHTOKEN=your-ngrok-token
+
+# Memory Configuration (Advanced settings)
+SHORT_TERM_MEMORY_TTL=3600
+LONG_TERM_MEMORY_TTL=2592000
+MAX_CONVERSATION_LENGTH=10000
+SIMILARITY_THRESHOLD=0.7
+
+# ChromaDB Configuration
+CHROMA_DB_PATH=./chroma_data_godic
+
+# API Configuration
+MAX_TOKENS_DEFAULT=2000
+TEMPERATURE=0.7
+TOP_P=0.9
 ```
+
+**Configuration Notes:**
+- If you modified the models in `start_ollama.bat`, update `DEFAULT_MODEL` and `ARABIC_MODEL` accordingly
+- Set `USE_NGROK=false` if you don't want public URL exposure
+- Adjust memory settings based on your system resources
+- Ensure `REDIS_URL` matches your Docker Redis container port (default: 6379)
+- `SUPABASE_URL` and `SUPABASE_KEY` are optional but required for persistent chat logging
 
 ## 🧪 Running the Server
 
@@ -289,3 +285,15 @@ Supabase JWT-based Bearer token required for:
 ## 📚 API Documentation
 
 Once the server is running, visit `http://localhost:8000/docs` for interactive API documentation with Swagger UI.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
