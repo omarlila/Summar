@@ -158,40 +158,7 @@ pip install -r requirements.txt
 ### 4. Configure environment variables
 Create a `.env` file in the root directory with the following configuration:
 
-**Important:** Make sure all values align with your custom setup and the models downloaded by `start_ollama.bat`:
-
-```env
-# Ollama Configuration
-OLLAMA_BASE_URL=http://localhost:11434
-DEFAULT_MODEL=smollm2:latest
-ARABIC_MODEL=prakasharyan/qwen-arabic:latest
-EMBEDDINGS_MODEL=jinaai/jina-clip-v2
-
-# Redis Configuration (Docker setup from prerequisites)
-REDIS_URL=redis://localhost:6379/0
-
-# Supabase Configuration (Optional - configure if using persistent logging)
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your-supabase-service-role-key
-
-# ngrok Configuration (Optional - set to false if not using public tunneling)
-USE_NGROK=true
-NGROK_AUTHTOKEN=your-ngrok-token
-
-# Memory Configuration (Advanced settings)
-SHORT_TERM_MEMORY_TTL=3600
-LONG_TERM_MEMORY_TTL=2592000
-MAX_CONVERSATION_LENGTH=10000
-SIMILARITY_THRESHOLD=0.7
-
-# ChromaDB Configuration
-CHROMA_DB_PATH=./chroma_data_godic
-
-# API Configuration
-MAX_TOKENS_DEFAULT=2000
-TEMPERATURE=0.7
-TOP_P=0.9
-```
+**Important:** Make sure all values align with your custom setup and the models downloaded by `start_ollama.bat`
 
 **Configuration Notes:**
 - If you modified the models in `start_ollama.bat`, update `DEFAULT_MODEL` and `ARABIC_MODEL` accordingly
