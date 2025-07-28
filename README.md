@@ -32,6 +32,7 @@ Before installing and running the chat server, ensure you have the following com
 ### 1. 🐳 Redis with Docker
 Download and run Redis using Docker with persistent volume:
 
+#### For Linux/macOS:
 ```bash
 # Pull Redis image
 docker pull redis:alpine
@@ -51,6 +52,42 @@ docker ps
 redis-cli ping  # Should return "PONG"
 ```
 
+#### For Windows:
+```cmd
+REM Pull Redis image
+docker pull redis:alpine
+
+REM Create a volume for Redis data persistence
+docker volume create redis-data
+
+REM Run Redis container with volume mapping
+docker run -d --name redis-server -p 6379:6379 -v redis-data:/data redis:alpine redis-server --appendonly yes
+
+REM Verify Redis is running
+docker ps
+docker exec -it redis-server redis-cli ping
+```
+
+**Alternative for Windows (using PowerShell):**
+```powershell
+# Pull Redis image
+docker pull redis:alpine
+
+# Create a volume for Redis data persistence
+docker volume create redis-data
+
+# Run Redis container with volume mapping
+docker run -d `
+  --name redis-server `
+  -p 6379:6379 `
+  -v redis-data:/data `
+  redis:alpine redis-server --appendonly yes
+
+# Verify Redis is running
+docker ps
+docker exec -it redis-server redis-cli ping
+```
+
 **Redis Configuration:**
 - Default port: `6379`
 - Connection URL: `redis://localhost:6379/0`
@@ -59,15 +96,51 @@ redis-cli ping  # Should return "PONG"
 ### 2. 🌐 ngrok Tunnel Setup
 Install and configure ngrok for public API exposure:
 
+#### For Linux:
 ```bash
-# Download ngrok (for Linux/macOS)
+# Download ngrok (for Linux)
 curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
 echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
 sudo apt update && sudo apt install ngrok
+```
 
+#### For macOS:
+```bash
 # For macOS with Homebrew
 brew install ngrok/ngrok/ngrok
+```
 
+#### For Windows:
+```cmd
+REM Option 1: Download from website
+REM Visit https://ngrok.com/download and download the Windows version
+REM Extract the .exe file to a folder in your PATH
+
+REM Option 2: Using Chocolatey (if installed)
+choco install ngrok
+
+REM Option 3: Using Scoop (if installed)
+scoop install ngrok
+```
+
+**For Windows PowerShell (Manual Installation):**
+```powershell
+# Create a directory for ngrok
+New-Item -ItemType Directory -Path "C:\ngrok" -Force
+
+# Download ngrok (you can also visit https://ngrok.com/download)
+Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile "C:\ngrok\ngrok.zip"
+
+# Extract the zip file
+Expand-Archive -Path "C:\ngrok\ngrok.zip" -DestinationPath "C:\ngrok"
+
+# Add to PATH (run as Administrator)
+$env:PATH += ";C:\ngrok"
+[Environment]::SetEnvironmentVariable("PATH", $env:PATH, [EnvironmentVariableTarget]::Machine)
+```
+
+#### Authentication (All Platforms):
+```bash
 # Authenticate with your ngrok token
 ngrok config add-authtoken YOUR_NGROK_AUTH_TOKEN
 
@@ -83,33 +156,73 @@ ngrok version
 ### 3. 🤖 Ollama Installation & Model Setup
 Install Ollama and download required models:
 
+#### For Linux/macOS:
 ```bash
-# Install Ollama (Linux/macOS)
+# Install Ollama
 curl -fsSL https://ollama.com/install.sh | sh
-
-# For Windows, download from: https://ollama.com/download/windows
 
 # Start Ollama service
 ollama serve
+```
 
-# Verify Ollama is running (in a new terminal)
+#### For Windows:
+```cmd
+REM Download Ollama from: https://ollama.com/download/windows
+REM Run the installer (OllamaSetup.exe)
+REM The installer will automatically add Ollama to your PATH
+
+REM Start Ollama service (run in Command Prompt or PowerShell)
+ollama serve
+
+REM Or use the Ollama app from the Start menu
+```
+
+**Alternative Windows Installation:**
+```powershell
+# Using PowerShell (if you have package managers)
+# With Chocolatey:
+choco install ollama
+
+# With Scoop:
+scoop install ollama
+
+# Start Ollama service
+ollama serve
+```
+
+#### Verify Installation (All Platforms):
+```bash
+# Verify Ollama is running (in a new terminal/command prompt)
 curl http://localhost:11434/api/version
+
+# For Windows Command Prompt (if curl is not available):
+# Use PowerShell: Invoke-RestMethod -Uri "http://localhost:11434/api/version"
 ```
 
 **Download Required Models:**
 Use the provided batch script to download all necessary models:
 
+#### For Linux/macOS:
 ```bash
 # Run the provided start_ollama.bat script from the repository
+chmod +x start_ollama.bat
 ./start_ollama.bat
-
-# This script will automatically:
-# - Start Ollama service
-# - Download smollm2:latest (English model)
-# - Download prakasharyan/qwen-arabic:latest (Arabic model)
-# - Verify all models are properly installed
-# - Test API endpoints for both models
 ```
+
+#### For Windows:
+```cmd
+REM Run the provided batch script from the repository
+start_ollama.bat
+
+REM Or double-click the start_ollama.bat file in Windows Explorer
+```
+
+**The script will automatically:**
+- Start Ollama service
+- Download smollm2:latest (English model)
+- Download prakasharyan/qwen-arabic:latest (Arabic model)
+- Verify all models are properly installed
+- Test API endpoints for both models
 
 **Note:** If you need to make custom changes to the models or add additional ones, modify the `start_ollama.bat` script in the repository accordingly.
 
@@ -145,9 +258,26 @@ cd chat-rag-server
 ```
 
 ### 2. Create and activate virtual environment
+
+#### For Linux/macOS:
 ```bash
 python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
+source venv/bin/activate
+```
+
+#### For Windows (Command Prompt):
+```cmd
+python -m venv venv
+venv\Scripts\activate
+```
+
+#### For Windows (PowerShell):
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+
+# If you get execution policy error, run:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 ### 3. Install Python dependencies
@@ -158,7 +288,40 @@ pip install -r requirements.txt
 ### 4. Configure environment variables
 Create a `.env` file in the root directory with the following configuration:
 
-**Important:** Make sure all values align with your custom setup and the models downloaded by `start_ollama.bat`
+**Important:** Make sure all values align with your custom setup and the models downloaded by `start_ollama.bat`:
+
+```env
+# Ollama Configuration
+OLLAMA_BASE_URL=http://localhost:11434
+DEFAULT_MODEL=smollm2:latest
+ARABIC_MODEL=prakasharyan/qwen-arabic:latest
+EMBEDDINGS_MODEL=jinaai/jina-clip-v2
+
+# Redis Configuration (Docker setup from prerequisites)
+REDIS_URL=redis://localhost:6379/0
+
+# Supabase Configuration (Optional - configure if using persistent logging)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-supabase-service-role-key
+
+# ngrok Configuration (Optional - set to false if not using public tunneling)
+USE_NGROK=true
+NGROK_AUTHTOKEN=your-ngrok-token
+
+# Memory Configuration (Advanced settings)
+SHORT_TERM_MEMORY_TTL=3600
+LONG_TERM_MEMORY_TTL=2592000
+MAX_CONVERSATION_LENGTH=10000
+SIMILARITY_THRESHOLD=0.7
+
+# ChromaDB Configuration
+CHROMA_DB_PATH=./chroma_data_godic
+
+# API Configuration
+MAX_TOKENS_DEFAULT=2000
+TEMPERATURE=0.7
+TOP_P=0.9
+```
 
 **Configuration Notes:**
 - If you modified the models in `start_ollama.bat`, update `DEFAULT_MODEL` and `ARABIC_MODEL` accordingly
@@ -170,6 +333,8 @@ Create a `.env` file in the root directory with the following configuration:
 ## 🧪 Running the Server
 
 ### 1. Start prerequisite services
+
+#### For Linux/macOS:
 ```bash
 # Ensure Redis is running
 docker start redis-server
@@ -182,9 +347,49 @@ curl http://localhost:11434/api/version  # Ollama
 redis-cli ping                           # Redis
 ```
 
+#### For Windows (Command Prompt):
+```cmd
+REM Ensure Redis is running
+docker start redis-server
+
+REM Ensure Ollama is running (in a separate command prompt)
+ollama serve
+
+REM Verify all services are healthy
+curl http://localhost:11434/api/version
+docker exec -it redis-server redis-cli ping
+```
+
+#### For Windows (PowerShell):
+```powershell
+# Ensure Redis is running
+docker start redis-server
+
+# Ensure Ollama is running (in a separate PowerShell window)
+ollama serve
+
+# Verify all services are healthy
+Invoke-RestMethod -Uri "http://localhost:11434/api/version"
+docker exec -it redis-server redis-cli ping
+```
+
 ### 2. Run the chat server
+
+#### For Linux/macOS:
 ```bash
 python server.py
+```
+
+#### For Windows:
+```cmd
+REM Command Prompt
+python server.py
+
+REM Or PowerShell
+python server.py
+
+REM Or if you have multiple Python versions
+py -3 server.py
 ```
 
 The server will start on `http://localhost:8000` with the following endpoints:
@@ -198,7 +403,8 @@ If ngrok is enabled, you'll also see a public URL in the console output.
 
 ### Common Issues & Solutions
 
-**Redis Connection Error:**
+#### Redis Connection Error:
+**Linux/macOS:**
 ```bash
 # Check if Redis container is running
 docker ps | grep redis
@@ -206,7 +412,16 @@ docker ps | grep redis
 docker restart redis-server
 ```
 
-**Ollama Model Not Found:**
+**Windows:**
+```cmd
+REM Check if Redis container is running
+docker ps | findstr redis
+REM Restart if needed
+docker restart redis-server
+```
+
+#### Ollama Model Not Found:
+**All Platforms:**
 ```bash
 # List installed models
 ollama list
@@ -214,7 +429,8 @@ ollama list
 ollama pull smollm2:latest
 ```
 
-**Port Already in Use:**
+#### Port Already in Use:
+**Linux/macOS:**
 ```bash
 # Check what's using port 8000
 lsof -i :8000
@@ -222,10 +438,44 @@ lsof -i :8000
 kill -9 <PID>
 ```
 
-**ngrok Authentication Error:**
+**Windows (Command Prompt):**
+```cmd
+REM Check what's using port 8000
+netstat -ano | findstr :8000
+REM Kill the process if needed (replace <PID> with actual process ID)
+taskkill /PID <PID> /F
+```
+
+**Windows (PowerShell):**
+```powershell
+# Check what's using port 8000
+Get-NetTCPConnection -LocalPort 8000
+# Kill the process if needed
+Stop-Process -Id <PID> -Force
+```
+
+#### ngrok Authentication Error:
+**All Platforms:**
 ```bash
 # Re-authenticate ngrok
 ngrok config add-authtoken YOUR_TOKEN
+```
+
+#### Python Virtual Environment Issues (Windows):
+```powershell
+# If you get execution policy error when activating venv
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Then try activating again
+.\venv\Scripts\Activate.ps1
+```
+
+#### Docker Permission Issues (Linux):
+```bash
+# Add your user to the docker group
+sudo usermod -aG docker $USER
+# Log out and log back in, or run:
+newgrp docker
 ```
 
 ## 📌 Notes
